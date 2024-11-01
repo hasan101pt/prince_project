@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Car Plate Calculator</title>
+</head>
+<body>
+    <div class="container">
+        <h1>ViaVerde Calculator</h1>
+
+        <!-- File upload form -->
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".xlsx" id="fileInput" required>
+            <button type="submit">Upload</button>
+            <button type="submit" name="clear" value="clear" onclick="clearResults()">Clear Results</button>
+        </form>
+
+        <!-- Display file upload success message only if file_uploaded session variable is True -->
+        {% if session.get('file_uploaded') %}
+            <p style="color: green;">File uploaded successfully!</p>
+        {% endif %}
+
+        <!-- Dropdown and calculate button for car plate selection -->
+        {% if car_number_plates %}
+            <form method="POST">
+                <label for="car_plate">Select Car Plate:</label>
+                <select name="car_plate" id="carPlateDropdown" required>
+                    <option value="">-- Choose a plate --</option>
+                    {% for plate in car_number_plates %}
+                        <option value="{{ plate }}" {% if plate == selected_plate %}selected{% endif %}>{{ plate }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" name="calculate" value="calculate">Calculate</button>
+            </form>
+        {% endif %}
+
+        <!-- Display total transaction value after calculation -->
+        {% if total_value is not none %}
+            <div class="result" id="resultDisplay">
+                <h3>Total Transaction Value for {{ selected_plate }}: {{ total_value }}</h3>
+            </div>
+        {% endif %}
+
+        <!-- Error message if something goes wrong -->
+        {% if error %}
+            <p style="color: red;">Error: {{ error }}</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function clearResults() {
+            document.getElementById('fileInput').value = "";  // Clear file input
+            document.getElementById('carPlateDropdown').selectedIndex = 0;  // Reset dropdown selection
+            document.getElementById('resultDisplay').innerHTML = "";  // Clear result display
+        }
+    </script>
+</body>
+</html>
